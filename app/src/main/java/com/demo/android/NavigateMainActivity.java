@@ -12,6 +12,8 @@ import androidx.activity.ComponentActivity;
 
 import com.google.gson.Gson;
 
+import java.nio.charset.StandardCharsets;
+import android.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -37,35 +39,46 @@ public class NavigateMainActivity extends ComponentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         setWebView((WebView) findViewById(R.id.webView));
-    }
-    @SuppressLint("SetJavaScriptEnabled")
-    public static void setWebView(WebView webView) {
-        m_MainWebView = webView;
-        m_CookieManager = CookieManager.getInstance();
-
-        m_CookieManager.setAcceptCookie(true);
-        m_CookieManager.setAcceptThirdPartyCookies(m_MainWebView, true);
-
-        WebSettings settings = m_MainWebView.getSettings();
-        settings.setJavaScriptEnabled(true);
 
         //--------->following is test codes...
         LoginParam u = new LoginParam();
-        u.user_name = "";
+        u.user_name = "kkk";
         u.password = "pass";
 
         navigateURL(u, "https://www.baidu.com");
         //--------->above is test codes...
     }
-    public static boolean navigateURL(LoginParam user, String url) {
-        synchronized (NavigateMainActivity.class) {
-            if (m_CurrentNavigatingURL == null) {
-                m_CurrentNavigatingURL = url;
-                return execNavigate(user);
-            }
+    @SuppressLint("SetJavaScriptEnabled")
+    public static void setWebView(@NonNull WebView webView) {
+        if (webView == null) {
+            Log.e("debug", "navigateURL paras error!");
+            throw new IllegalArgumentException("navigateURL paras error");
+        } else {
+            m_MainWebView = webView;
+            m_CookieManager = CookieManager.getInstance();
 
-            return false;
+            m_CookieManager.setAcceptCookie(true);
+            m_CookieManager.setAcceptThirdPartyCookies(m_MainWebView, true);
+
+            WebSettings settings = m_MainWebView.getSettings();
+            settings.setJavaScriptEnabled(true);
         }
+    }
+    public static boolean navigateURL(@NonNull LoginParam loginParam, @NonNull String url) {
+        if (loginParam == null || loginParam.user_name == null || url == null
+                || loginParam.user_name.isEmpty() || url.isEmpty()) {
+            Log.e("debug", "navigateURL paras error!");
+            throw new IllegalArgumentException("navigateURL paras error");
+        }
+
+        if (m_CurrentNavigatingURL == null) {
+            m_CurrentNavigatingURL = url;
+            byte[] sha_value = HmacSha256Util.hmacsha256(loginParam.user_name.getBytes(StandardCharsets.UTF_8), "NonArp15MonArp15".getBytes(StandardCharsets.UTF_8));
+            loginParam.password = Base64.encodeToString(sha_value, Base64.DEFAULT);
+            return execNavigate(loginParam);
+        }
+
+        return false;
     }
 
     private static boolean execNavigate(LoginParam loginParam) {
@@ -111,9 +124,7 @@ public class NavigateMainActivity extends ComponentActivity {
                                 }
                             });
 
-                            synchronized (NavigateMainActivity.class) {
-                                m_CurrentNavigatingURL = null;
-                            }
+                            m_CurrentNavigatingURL = null;
 
                         } else {
                             Log.e("debug", "apiResultObject.code:" + Objects.requireNonNull(apiResultObject.code)
