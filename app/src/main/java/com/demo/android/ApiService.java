@@ -7,7 +7,8 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 public interface ApiService {
+    static String baseURL = "http://gd.topgamers.cn:8080/";
     @Headers("Content-Type:application/json")
-    @POST("doc.html#/default/登陆事务/login")
-    Observable<User> getTokenByPost(@Body RequestBody body);
+    @POST("login/login")
+    Observable<ApiResultObject<User>> getTokenByPost(@Body RequestBody body);
 }
