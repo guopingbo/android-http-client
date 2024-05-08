@@ -30,10 +30,13 @@ import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NavigateMainActivity extends ComponentActivity {
+    public static final String TAG = NavigateMainActivity.class.getSimpleName();
+
     @SuppressLint("StaticFieldLeak")
     public static WebView m_MainWebView;
     public static String m_CurrentNavigatingURL;
     public static CookieManager m_CookieManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,11 +51,12 @@ public class NavigateMainActivity extends ComponentActivity {
         navigateURL(u, "https://www.baidu.com");
         //--------->above is test codes...
     }
+
     @SuppressLint("SetJavaScriptEnabled")
     public static void setWebView(@NonNull WebView webView) {
         if (webView == null) {
-            Log.e("debug", "navigateURL paras error!");
-            throw new IllegalArgumentException("navigateURL paras error");
+            Log.e(TAG, "setWebView paras error!");
+            throw new IllegalArgumentException("setWebView paras error");
         } else {
             m_MainWebView = webView;
             m_CookieManager = CookieManager.getInstance();
@@ -64,10 +68,11 @@ public class NavigateMainActivity extends ComponentActivity {
             settings.setJavaScriptEnabled(true);
         }
     }
+
     public static boolean navigateURL(@NonNull LoginParam loginParam, @NonNull String url) {
         if (loginParam == null || loginParam.user_name == null || url == null
                 || loginParam.user_name.isEmpty() || url.isEmpty()) {
-            Log.e("debug", "navigateURL paras error!");
+            Log.e(TAG, "navigateURL paras error!");
             throw new IllegalArgumentException("navigateURL paras error");
         }
 
@@ -127,7 +132,7 @@ public class NavigateMainActivity extends ComponentActivity {
                             m_CurrentNavigatingURL = null;
 
                         } else {
-                            Log.e("debug", "apiResultObject.code:" + Objects.requireNonNull(apiResultObject.code)
+                            Log.e(TAG, "apiResultObject.code:" + Objects.requireNonNull(apiResultObject.code)
                                                 + ", apiResultObject.msg:" + Objects.requireNonNull(apiResultObject.msg)
                                                 + ", apiResultObject.data:" + new Gson().toJson(apiResultObject.data)
                             );
@@ -137,24 +142,23 @@ public class NavigateMainActivity extends ComponentActivity {
                     @Override
                     public void onError(@NonNull Throwable e) {
                         //报错调试
-                        //Log.e("debug", "HTTP request failed!");
-                        Log.e("debug", Log.getStackTraceString(e));
-                        Log.e("debug", Objects.requireNonNull(e.getLocalizedMessage()));
+                        //Log.e(TAG, "HTTP request failed!");
+                        Log.e(TAG, Log.getStackTraceString(e));
+                        Log.e(TAG, Objects.requireNonNull(e.getLocalizedMessage()));
                     }
 
                     @Override
                     public void onComplete() {
-                        Log.i("info", "complete now!");
+                        Log.i(TAG, "complete now!");
                     }
                 });
 
         } catch (Exception e) {
-            Log.e("debug", Log.getStackTraceString(e));
-            Log.e("debug", Objects.requireNonNull(e.getLocalizedMessage()));
+            Log.e(TAG, Log.getStackTraceString(e));
+            Log.e(TAG, Objects.requireNonNull(e.getLocalizedMessage()));
             return false;
         }
 
         return true;
     }
-
 }
