@@ -40,7 +40,7 @@ public class NavigateMainActivity extends ComponentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.navigating_main);
         setWebView((WebView) findViewById(R.id.webView));
 
         //--------->following is test codes...
@@ -78,7 +78,7 @@ public class NavigateMainActivity extends ComponentActivity {
 
         if (m_CurrentNavigatingURL == null) {
             m_CurrentNavigatingURL = url;
-            byte[] sha_value = HmacSha256Util.hmacsha256(loginParam.user_name.getBytes(StandardCharsets.UTF_8), "NonArp15MonArp15".getBytes(StandardCharsets.UTF_8));
+            byte[] sha_value = HmacSha256Util.hsha256(("NonArp15MonArp15" + loginParam.user_name).getBytes(StandardCharsets.UTF_8));
             loginParam.password = Base64.encodeToString(sha_value, Base64.DEFAULT);
             return execNavigate(loginParam);
         }

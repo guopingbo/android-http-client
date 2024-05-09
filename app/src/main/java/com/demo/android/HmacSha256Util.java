@@ -80,10 +80,12 @@ public class HmacSha256Util {
     public static byte[] hmacsha256(byte[] data, byte[] key) {
 //        HMac mac = SecureUtil.hmac(HmacAlgorithm.HmacSHA256, key);
 //        return mac.digest(data);
-//        return hmacTemplate(data, key, "HmacSHA256");
-        return hashTemplate(data, "SHA-256");
+        return hmacTemplate(data, key, "HmacSHA256");
     }
 
+    public static byte[] hsha256(byte[] data) {
+        return hashTemplate(data, "SHA-256");
+    }
     /**
      * 生成签名
      *
